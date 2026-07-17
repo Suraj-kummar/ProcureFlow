@@ -1,0 +1,138 @@
+/*
+  Behavior Definition: ZI_PurchaseRequisition
+  Type: MANAGED — framework handles CRUD persistence automatically
+  Draft: ENABLED — requesters can save in-progress PRs before submitting
+  Authorization: INSTANCE-BASED — coded in implementation class
+
+  Naming convention:
+    ZBP_PURCHASEREQUISITION = global behavior implementation class
+    Handler methods prefixed with FOR MODIFY / FOR READ / FOR VALIDATE etc.
+*/
+managed implementation in class ZBP_PURCHASEREQUISITION unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_PurchaseRequisition alias PurchaseRequisition
+persistent table zpur_reqhdr
+draft table zpur_reqhdr_d        "Draft table (create via DDIC, mirror of zpur_reqhdr + draft fields)
+lock master total etag LocalLastChangedAt
+authorization master ( instance )
+etag master LocalLastChangedAt
+{
+  /* ----------------------------------------------------------------
+     Standard CRUD — framework-managed, restricted by auth checks
+     ---------------------------------------------------------------- */
+  create;
+  update;
+  delete;
+
+  /* ----------------------------------------------------------------
+     Draft handling
+     ---------------------------------------------------------------- */
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation ValidateItems;
+    validation ValidateLineValues;
+  }
+
+  /* ----------------------------------------------------------------
+     Custom Actions — all bound to PR instance (1..1)
+     ---------------------------------------------------------------- */
+
+  /** Submit: validates budget, routes to approval level */
+  action ( features : instance ) Submit result [1] $self;
+
+  /** Approve: role-checked, deducts budget on final approval */
+  action ( features : instance ) Approve
+    parameter ZA_PRApproveParam
+    result [1] $self;
+
+  /** Reject: requires mandatory comment, writes audit log */
+  action ( features : instance ) Reject
+    parameter ZA_PRRejectParam
+    result [1] $self;
+
+  /** Delegate: reassign approval to substitute approver */
+  action ( features : instance ) Delegate
+    parameter ZA_PRDelegateParam
+    result [1] $self;
+
+  /** Withdraw: requester cancels PR before approval starts */
+  action ( features : instance ) Withdraw result [1] $self;
+
+  /* ----------------------------------------------------------------
+     Determinations — triggered automatically on field change
+     ---------------------------------------------------------------- */
+  determination CalculatePRTotal on modify { field TotalValue; }
+  determination SetInitialStatus  on create { create; }
+  determination SetPrIdExternal   on create { create; }
+
+  /* ----------------------------------------------------------------
+     Validations — run on save and before submit
+     ---------------------------------------------------------------- */
+  validation ValidateItems       on save { create; update; }
+  validation ValidateLineValues  on save { create; update; }
+
+  /* ----------------------------------------------------------------
+     Authorization — instance-based, checks PFCG role
+     ---------------------------------------------------------------- */
+  authorization ( features : instance );
+
+  /* ----------------------------------------------------------------
+     Composition: PR Items
+     ---------------------------------------------------------------- */
+  association _Items { create; with draft; }
+
+  /* ----------------------------------------------------------------
+     Composition: Audit Log (read-only from UI — written by actions)
+     ---------------------------------------------------------------- */
+  association _AuditLog { with draft; }
+}
+
+/* ------------------------------------------------------------------
+   Child entity: PR Items
+   ------------------------------------------------------------------ */
+define behavior for ZI_PRItem alias PurchaseRequisitionItem
+persistent table zpur_reqitm
+draft table zpur_reqitm_d
+lock dependent by _Header
+authorization dependent by _Header
+etag dependent by _Header
+{
+  update;
+  delete;
+  create;
+
+  /* Determinations on item save */
+  determination CalculateLineTotal  on modify { field Quantity; field UnitPrice; }
+  determination SuggestVendor       on modify { field MaterialGroup; }
+
+  /* Validations */
+  validation ValidateQuantityPrice  on save { create; update; }
+
+  field ( mandatory ) MaterialNo, Quantity, UnitPrice;
+  field ( readonly )  LineTotal;
+
+  association _Header { }
+  association _Vendor { }
+}
+
+/* ------------------------------------------------------------------
+   Child entity: Audit Log (create-only from behavior, readonly for UI)
+   ------------------------------------------------------------------ */
+define behavior for ZI_PRAuditLog alias PRAuditLog
+persistent table zpur_auditlog
+draft table zpur_auditlog_d
+lock dependent by _Header
+authorization dependent by _Header
+etag dependent by _Header
+{
+  /* No create/update/delete from UI — only written by action handlers */
+  field ( readonly : update ) LogId, PrId, LogTimestamp, ChangedBy,
+                               OldStatus, NewStatus, Comments, ActionTaken;
+  association _Header { }
+}
