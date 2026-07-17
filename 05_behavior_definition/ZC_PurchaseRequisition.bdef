@@ -1,0 +1,46 @@
+/*
+  Projection Behavior Definition: ZC_PurchaseRequisition
+  Purpose: Expose the managed behavior to the OData service.
+  Only actions/fields the UI should see are listed here.
+  Authorization checks propagate from the managed behavior.
+*/
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_PurchaseRequisition alias PurchaseRequisition
+{
+  use create;
+  use update;
+  use delete;
+
+  use draft action Edit;
+  use draft action Activate;
+  use draft action Discard;
+  use draft action Resume;
+  use draft determine action Prepare;
+
+  use action Submit;
+  use action Approve;
+  use action Reject;
+  use action Delegate;
+  use action Withdraw;
+
+  use association _Items  { create; with draft; }
+  use association _AuditLog { with draft; }
+}
+
+define behavior for ZC_PRItem alias PurchaseRequisitionItem
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Header { }
+  use association _Vendor  { }
+}
+
+define behavior for ZC_PRAuditLog alias PRAuditLog
+{
+  use association _Header { }
+}
