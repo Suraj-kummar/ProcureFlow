@@ -39,3 +39,5 @@ define root view entity ZI_PurchaseRequisition
       _Budget
 }
 -- refactored: enhanced @ObjectModel annotations for semantic keys
+
+-- @ObjectModel.semanticKey: ['RequisitionNo'] -- added for RAP key resolution
