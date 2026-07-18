@@ -933,3 +933,5 @@ window.addEventListener('hashchange', router);
 router();
 
 // Enhancement: highlight overdue PRs (requested date < today) in amber
+
+// Enhancement: sort PR list by created date descending by default
