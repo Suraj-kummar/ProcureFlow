@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProcureFlow — Purchase Requisition System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ===================== SHELL / HEADER ===================== -->
+<div id="shell">
+  <header class="shell-header">
+    <div class="header-left">
+      <div class="logo">
+        <div class="logo-icon">PF</div>
+        <div class="logo-text">
+          <span class="logo-title">ProcureFlow</span>
+          <span class="logo-sub">Purchase Requisition System</span>
+        </div>
+      </div>
+    </div>
+    <nav class="header-nav" id="headerNav"></nav>
+    <div class="header-right">
+      <div class="user-pill" id="userPill">
+        <div class="user-avatar" id="userAvatar">R1</div>
+        <div class="user-info">
+          <span class="user-name" id="userName">REQUESTER1</span>
+          <span class="user-role" id="userRole">Requester</span>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="dropdown-item" onclick="switchUser('REQUESTER1','Requester')">👤 REQUESTER1 (Requester)</div>
+          <div class="dropdown-item" onclick="switchUser('REQUESTER2','Requester')">👤 REQUESTER2 (Requester)</div>
+          <div class="dropdown-item" onclick="switchUser('MANAGER1','Approver')">✅ MANAGER1 (Approver)</div>
+          <div class="dropdown-item" onclick="switchUser('MANAGER2','Approver')">✅ MANAGER2 (Approver)</div>
+          <div class="dropdown-item" onclick="switchUser('FINANCE1','Finance Approver')">💰 FINANCE1 (Finance Approver)</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main id="mainContent">
+    <!-- Views injected here by router -->
+  </main>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Action</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div id="toastContainer"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
