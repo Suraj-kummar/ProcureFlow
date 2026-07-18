@@ -33,3 +33,5 @@ define view entity ZC_PRItem
       _Header : redirected to parent ZC_PurchaseRequisition,
       _Vendor  : redirected to ZC_Vendor
 }
+
+-- @Semantics.amount.currencyCode: 'Currency' added to NetAmount
