@@ -192,3 +192,5 @@ annotate entity ZC_PurchaseRequisition with
   PrId;
 }
 -- enhanced: added SelectionFields quick filters for status and date
+
+-- @UI.selectionField: [{ position: 10, qualifier: 'OverallStatus' }] added
