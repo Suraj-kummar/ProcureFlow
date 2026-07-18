@@ -562,3 +562,5 @@ tbody tr:last-child td { border-bottom: none; }
 /* enhanced: modal slide-in animation for create/approve dialogs */
 
 /* Status badge: Submitted = blue, Approved = green, Rejected = red, Cancelled = grey */
+
+/* Modal animation: slide-in from top with opacity fade */
