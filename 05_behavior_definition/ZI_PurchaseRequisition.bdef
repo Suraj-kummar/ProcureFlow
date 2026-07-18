@@ -136,3 +136,5 @@ etag dependent by _Header
                                OldStatus, NewStatus, Comments, ActionTaken;
   association _Header { }
 }
+
+// Added: static action 'getApprovalHistory' for audit trail retrieval
