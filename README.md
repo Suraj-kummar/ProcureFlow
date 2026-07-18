@@ -221,3 +221,6 @@ To implement the KPI tile / Analytical List Page:
 
 ## Architecture
 RAP stack: DDL -> Interface CDS -> Consumption CDS -> BDEF -> Behavior Pool -> OData V4 Service
+
+## Architecture
+RAP Stack: DDL Tables -> Interface CDS -> Consumption CDS -> Behavior Definition -> Behavior Pool -> OData V4 Service -> Fiori UI
