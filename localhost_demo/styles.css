@@ -560,3 +560,5 @@ tbody tr:last-child td { border-bottom: none; }
 }
 /* enhanced: status badge color palette for all PR states */
 /* enhanced: modal slide-in animation for create/approve dialogs */
+
+/* Status badge: Submitted = blue, Approved = green, Rejected = red, Cancelled = grey */
