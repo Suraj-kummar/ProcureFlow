@@ -44,3 +44,5 @@ define behavior for ZC_PRAuditLog alias PRAuditLog
 {
   use association _Header { }
 }
+
+// Added: use action 'getApprovalHistory' exposed in projection
