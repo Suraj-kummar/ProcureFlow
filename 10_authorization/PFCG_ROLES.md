@@ -99,3 +99,5 @@ Create these roles in PFCG (S/4HANA on-premise) or the BTP IAM app.
 > - Assign to Business Users via IAM → User Management
 > - Map to the authorization objects defined above
 > - The `AUTHORITY-CHECK` ABAP statement works identically on BTP
+
+## ZPROCUREFLOW_ADMIN role: full access including delete and budget override
