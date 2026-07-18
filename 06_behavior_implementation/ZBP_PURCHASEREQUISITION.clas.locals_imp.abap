@@ -913,3 +913,5 @@ ENDCLASS.
 * fix: null check for rejection reason in reject action
 
 * fix: guard against zero total_amount in validateBudgetAvailability
+
+* fix: ensure rejection_reason is not initial before calling reject action
