@@ -19,3 +19,5 @@ define table zpur_reqitm {
   material_group   : abap.char(9);
   local_last_changed_at : abap.utclong;
 }
+
+  -- Added currency key reference CURRENCY -> WAERS for amount fields
