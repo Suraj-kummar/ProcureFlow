@@ -348,3 +348,5 @@ FORM insert_prs.
   INSERT zpur_auditlog FROM TABLE @lt_logs.
 
 ENDFORM.
+
+* Added: test data for multi-currency PRs (USD, EUR, GBP scenarios)
