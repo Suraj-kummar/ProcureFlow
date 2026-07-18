@@ -1,0 +1,46 @@
+@Metadata.layer: #CUSTOMER
+annotate entity ZC_PRItem with
+{
+  /* Items table — shown in Section 1 of Object Page */
+
+  @UI.lineItem: [{ position: 10, label: 'Item No.' }]
+  ItemNo;
+
+  @UI.lineItem: [{ position: 20, label: 'Material' }]
+  MaterialNo;
+
+  @UI.lineItem: [{ position: 30, label: 'Description', importance: #HIGH }]
+  Description;
+
+  @UI.lineItem: [{ position: 40, label: 'Qty' }]
+  Quantity;
+
+  @UI.lineItem: [{ position: 50, label: 'UOM' }]
+  UnitOfMeasure;
+
+  @UI.lineItem: [{ position: 60, label: 'Unit Price' }]
+  UnitPrice;
+
+  @UI.lineItem: [{
+    position:  70,
+    label:     'Line Total',
+    importance: #HIGH
+  }]
+  LineTotal;
+
+  @UI.lineItem: [{ position: 80, label: 'Material Group' }]
+  MaterialGroup;
+
+  @UI.lineItem: [{
+    position: 90,
+    label:    'Preferred Vendor'
+  }]
+  PreferredVendor;
+
+  /* Value Help for PreferredVendor — shows vendor name + ID */
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZC_Vendor', element: 'VendorId' },
+    additionalBinding: [{ element: 'VendorName', usage: #DISPLAY_ONLY }]
+  }]
+  PreferredVendor;
+}
