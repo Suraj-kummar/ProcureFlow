@@ -1,0 +1,8 @@
+@EndUserText.label: 'ProcureFlow Service Definition'
+define service ZPROCUREFLOW_SRV {
+  expose ZC_PurchaseRequisition as PurchaseRequisition;
+  expose ZC_PRItem              as PurchaseRequisitionItem;
+  expose ZC_PRAuditLog          as PRAuditLog;
+  expose ZC_Vendor              as Vendor;
+  expose ZC_CostCenterBudget    as CostCenterBudget;
+}
