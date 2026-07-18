@@ -25,3 +25,5 @@ define table zpur_reqhdr {
   last_changed_by       : abap.char(12);
 }
 -- refactored: added MANDT client field documentation
+
+  -- Added index hint: ZPUR_REQHDR_IDX1 on MANDT, STATUS
