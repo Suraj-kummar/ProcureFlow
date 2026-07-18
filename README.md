@@ -224,3 +224,6 @@ RAP stack: DDL -> Interface CDS -> Consumption CDS -> BDEF -> Behavior Pool -> O
 
 ## Architecture
 RAP Stack: DDL Tables -> Interface CDS -> Consumption CDS -> Behavior Definition -> Behavior Pool -> OData V4 Service -> Fiori UI
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
