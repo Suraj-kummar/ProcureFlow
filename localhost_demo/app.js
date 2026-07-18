@@ -931,3 +931,5 @@ document.addEventListener('click', () => {
 seedData();
 window.addEventListener('hashchange', router);
 router();
+
+// Enhancement: highlight overdue PRs (requested date < today) in amber
