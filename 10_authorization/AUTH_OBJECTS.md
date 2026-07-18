@@ -55,3 +55,5 @@ end as StatusCriticality,
 
 Add this CASE expression as an extra field in `ZI_PurchaseRequisition` CDS view
 and reference it in `@UI.dataPoint.criticality` in the metadata extension.
+
+## ZPUR_ADM - Admin authorization object for full PR management access
