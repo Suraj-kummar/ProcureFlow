@@ -41,3 +41,5 @@ define root view entity ZC_PurchaseRequisition
       _AuditLog : redirected to composition child ZC_PRAuditLog,
       _Budget
 }
+
+-- @Search.searchable: true added for Fiori smart search support
