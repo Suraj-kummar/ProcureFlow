@@ -1,0 +1,32 @@
+@Metadata.layer: #CUSTOMER
+annotate entity ZC_PRAuditLog with
+{
+  /* Audit Log table — shown in Section 2 (Approval History) of Object Page */
+  /* This section is completely read-only — no create/edit buttons */
+
+  @UI.lineItem: [{ position: 10, label: 'Timestamp', importance: #HIGH }]
+  LogTimestamp;
+
+  @UI.lineItem: [{ position: 20, label: 'Action', importance: #HIGH }]
+  ActionTaken;
+
+  @UI.lineItem: [{ position: 30, label: 'Changed By' }]
+  ChangedBy;
+
+  @UI.lineItem: [{ position: 40, label: 'From Status' }]
+  OldStatus;
+
+  @UI.lineItem: [{
+    position: 50,
+    label: 'To Status',
+    criticality: #( CASE NewStatus
+      WHEN 'Approved'        THEN #POSITIVE
+      WHEN 'Rejected'        THEN #NEGATIVE
+      WHEN 'PendingApproval' THEN #CRITICAL
+      ELSE                        #NEUTRAL )
+  }]
+  NewStatus;
+
+  @UI.lineItem: [{ position: 60, label: 'Comments / Reason' }]
+  Comments;
+}
