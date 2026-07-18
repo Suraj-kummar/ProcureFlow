@@ -911,3 +911,5 @@ CLASS lhc_purchaserequisitionitem IMPLEMENTATION.
 ENDCLASS.
 * fix: handle zero budget edge case in validate_BudgetAvailability
 * fix: null check for rejection reason in reject action
+
+* fix: guard against zero total_amount in validateBudgetAvailability
