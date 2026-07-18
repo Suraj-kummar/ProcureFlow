@@ -1,0 +1,34 @@
+@EndUserText.label: 'ProcureFlow OData V4 UI Service Binding'
+/*
+  Service Binding type: OData V4 - UI
+  This file documents the binding configuration.
+  In ADT: create via New → Service Binding, then link to ZPROCUREFLOW_SRV.
+
+  Steps to activate in ADT:
+  1. Right-click on package → New → Service Binding
+  2. Name: ZPROCUREFLOW_UI_O4
+  3. Binding Type: OData V4 - UI
+  4. Service Definition: ZPROCUREFLOW_SRV
+  5. Click "Publish Locally" (BTP) or activate via /IWFND/MAINT_SERVICE (S4OP)
+  6. Click "Preview" on PurchaseRequisition entity to launch Fiori Elements preview
+
+  URL Pattern (BTP):
+    https://<host>/sap/opu/odata4/sap/zprocureflow_ui_o4/srvd/sap/zprocureflow_srv/0001/
+
+  Entities exposed:
+  - PurchaseRequisition   (root, draft-enabled)
+  - PurchaseRequisitionItem (child via $expand=_Items)
+  - PRAuditLog            (child via $expand=_AuditLog)
+  - Vendor                (lookup / value help)
+  - CostCenterBudget      (lookup for budget display)
+
+  Actions exposed (POST to entity + /action):
+  - PurchaseRequisition('key')/ZPROCUREFLOW_SRV.Submit
+  - PurchaseRequisition('key')/ZPROCUREFLOW_SRV.Approve
+  - PurchaseRequisition('key')/ZPROCUREFLOW_SRV.Reject
+  - PurchaseRequisition('key')/ZPROCUREFLOW_SRV.Delegate
+  - PurchaseRequisition('key')/ZPROCUREFLOW_SRV.Withdraw
+*/
+define service binding ZPROCUREFLOW_UI_O4
+  service definition ZPROCUREFLOW_SRV
+  binding type ODATA_V4_UI;
