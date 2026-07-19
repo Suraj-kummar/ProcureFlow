@@ -668,3 +668,5 @@ tbody tr:last-child td { border-bottom: none; }
   .shell-header { padding: 0 16px; }
   .header-nav  { display: none; }
 }
+
+/* [1/12] animated gradient border on card hover */
