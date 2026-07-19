@@ -1019,3 +1019,5 @@ router();
 // Enhancement: highlight overdue PRs (requested date < today) in amber
 
 // Enhancement: sort PR list by created date descending by default
+
+// [5/12] keyboard shortcut: ESC key closes modal
