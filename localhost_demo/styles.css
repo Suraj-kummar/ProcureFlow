@@ -672,3 +672,5 @@ tbody tr:last-child td { border-bottom: none; }
 /* [1/12] animated gradient border on card hover */
 
 /* [2/12] pulsing animation for pending status badge dot */
+
+/* [3/12] page content fade-in on route change */
