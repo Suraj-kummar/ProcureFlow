@@ -5,3 +5,8 @@
   from = "/*"
   to   = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/localhost_demo/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
