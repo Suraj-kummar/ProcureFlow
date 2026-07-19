@@ -1023,3 +1023,5 @@ router();
 // [5/12] keyboard shortcut: ESC key closes modal
 
 // [6/12] pending count badge on nav button
+
+// [7/12] skeleton loader for async data simulation
