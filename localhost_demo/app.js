@@ -107,9 +107,18 @@ function navigate(path) { location.hash = path; }
 function updateNav() {
   const hash = location.hash || '#list';
   document.getElementById('headerNav').innerHTML = `
-    <button class="nav-btn ${hash==='#list'?'active':''}"        onclick="navigate('#list')">📋 My PRs</button>
-    <button class="nav-btn ${hash==='#analytics'?'active':''}"   onclick="navigate('#analytics')">📊 Analytics</button>
-    ${currentRole==='Requester' ? `<button class="nav-btn" onclick="navigate('#new')">＋ New PR</button>` : ''}
+    <button class="nav-btn ${hash==='#list'?'active':''}" onclick="navigate('#list')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      My PRs
+    </button>
+    <button class="nav-btn ${hash==='#analytics'?'active':''}" onclick="navigate('#analytics')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analytics
+    </button>
+    ${currentRole==='Requester' ? `<button class="nav-btn ${hash==='#new'?'active':''}" onclick="navigate('#new')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New PR
+    </button>` : ''}
   `;
 }
 
@@ -129,7 +138,8 @@ function visiblePRs() {
 // LIST REPORT
 // ─────────────────────────────────────────────────────────────────────────────
 function renderListReport() {
-  const prs = visiblePRs();
+  // Sort by created date descending
+  const prs = visiblePRs().sort((a,b) => b.creationDate.localeCompare(a.creationDate));
 
   const html = `
     <div class="page-header">
@@ -195,18 +205,31 @@ function renderListReport() {
 }
 
 function renderTableRows(prs) {
-  return prs.map(pr => `
-    <tr onclick="navigate('#pr/${pr.prId}')">
-      <td><span style="font-weight:600;color:var(--brand-primary)">${pr.prExt}</span></td>
-      <td>${pr.requester}</td>
-      <td>${pr.department}</td>
-      <td class="amount">₹${fmt(pr.totalValue)}</td>
+  const today_str = today();
+  return prs.map(pr => {
+    const isOverdue = pr.status === STATUS.PENDING && pr.creationDate < today_str;
+    return `
+    <tr onclick="navigate('#pr/${pr.prId}')" style="${isOverdue ? 'background:rgba(245,158,11,0.04);' : ''}">
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-weight:800;color:var(--brand);font-size:13px">${pr.prExt}</span>
+          ${isOverdue ? '<span style="font-size:10px;background:rgba(245,158,11,0.15);color:#fbbf24;padding:2px 8px;border-radius:99px;font-weight:700">OVERDUE</span>' : ''}
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:26px;height:26px;border-radius:50%;background:var(--brand-grad-soft);border:1px solid rgba(99,102,241,0.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--brand)">${pr.requester.substring(0,2).toUpperCase()}</div>
+          <span>${pr.requester}</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-2)">${pr.department}</span></td>
+      <td class="amount amount-highlight">₹${fmt(pr.totalValue)}</td>
       <td>${statusBadge(pr.status)}</td>
       <td><span class="priority-chip priority-${pr.priority}">${pr.priority}</span></td>
-      <td>${pr.approver}</td>
-      <td>${pr.creationDate}</td>
-    </tr>
-  `).join('');
+      <td><span style="color:var(--text-2);font-size:12px">${pr.approver}</span></td>
+      <td><span style="color:var(--text-3);font-size:12px">${pr.creationDate}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 function applyFilters() {
@@ -327,22 +350,32 @@ function renderObjectPage(prId) {
       <!-- Section: Audit Log -->
       <div class="section-panel" id="panel-audit">
         <div class="card">
-          <div class="card-header"><span class="card-title">📋 Approval History & Audit Trail</span></div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Timestamp</th><th>Action</th><th>Changed By</th><th>From</th><th>To</th><th>Comments</th></tr></thead>
-              <tbody>
-                ${prLogs.length === 0 ? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">No audit entries yet.</td></tr>` :
-                  prLogs.map(l => `<tr>
-                    <td style="font-size:12px;color:var(--text-muted)">${fmtDate(l.logTimestamp)}</td>
-                    <td><span style="font-weight:600;color:var(--brand-primary)">${l.actionTaken}</span></td>
-                    <td>${l.changedBy}</td>
-                    <td>${statusBadge(l.oldStatus)}</td>
-                    <td>${statusBadge(l.newStatus)}</td>
-                    <td style="max-width:260px;font-size:12px;color:var(--text-secondary)">${l.comments||'—'}</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
+          <div class="card-header"><span class="card-title">Approval History & Audit Trail</span><span class="text-sm text-muted">${prLogs.length} entries</span></div>
+          <div class="card-body">
+            ${prLogs.length === 0 ? `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No audit entries yet</div></div>` :
+              `<div class="timeline">
+                ${prLogs.map((l,idx) => {
+                  const actionColors = { 'Submit':'#6366f1','Approve':'#10b981','Reject':'#ef4444','Delegate':'#f59e0b','Withdraw':'#6b7280' };
+                  const col = actionColors[l.actionTaken] || '#6366f1';
+                  return `<div class="timeline-item">
+                    <div class="tl-dot-wrap">
+                      <div class="tl-dot" style="background:${col};color:${col}"></div>
+                      ${idx < prLogs.length-1 ? '<div class="tl-line"></div>' : ''}
+                    </div>
+                    <div class="tl-content">
+                      <div class="tl-action" style="color:${col}">${l.actionTaken}</div>
+                      <div class="tl-meta">${l.changedBy} · ${fmtDate(l.logTimestamp)}</div>
+                      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+                        ${statusBadge(l.oldStatus)}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        ${statusBadge(l.newStatus)}
+                      </div>
+                      ${l.comments ? `<div class="tl-comment">${l.comments}</div>` : ''}
+                    </div>
+                  </div>`;
+                }).join('')}
+              </div>`
+            }
           </div>
         </div>
       </div>
@@ -781,74 +814,120 @@ function renderAnalytics() {
   const maxCount = Math.max(...byStatus.map(x=>x.count),1);
 
   const statusColors = {
-    [STATUS.DRAFT]: '#6c757d', [STATUS.SUBMITTED]:'#0070f2', [STATUS.PENDING]:'#e67e00',
-    [STATUS.APPROVED]:'#107e3e', [STATUS.REJECTED]:'#bb0000', [STATUS.CLOSED]:'#9e9e9e'
+    [STATUS.DRAFT]: '#64748b', [STATUS.SUBMITTED]:'#6366f1', [STATUS.PENDING]:'#f59e0b',
+    [STATUS.APPROVED]:'#10b981', [STATUS.REJECTED]:'#ef4444', [STATUS.CLOSED]:'#6b7280'
   };
 
-  document.getElementById('mainContent').innerHTML = `
-    <div class="page-header"><div>
-      <div class="page-title">Analytics Dashboard</div>
-      <div class="page-subtitle">Procurement KPIs for ${currentUser}</div>
-    </div></div>
+  const rejected = all.filter(p => p.status === STATUS.REJECTED).length;
 
-    <div class="kpi-grid">
-      <div class="kpi-tile">
-        <div class="kpi-tile-icon">⏳</div>
-        <div class="kpi-tile-value" style="color:var(--status-pending)">${pending}</div>
-        <div class="kpi-tile-label">Pending Approvals</div>
-        <div class="kpi-tile-sub">Awaiting action</div>
-      </div>
-      <div class="kpi-tile">
-        <div class="kpi-tile-icon">✅</div>
-        <div class="kpi-tile-value" style="color:var(--status-approved)">${approved}</div>
-        <div class="kpi-tile-label">Approved PRs</div>
-        <div class="kpi-tile-sub">This period</div>
-      </div>
-      <div class="kpi-tile">
-        <div class="kpi-tile-icon">📄</div>
-        <div class="kpi-tile-value">${all.length}</div>
-        <div class="kpi-tile-label">Total PRs</div>
-        <div class="kpi-tile-sub">All statuses</div>
-      </div>
-      <div class="kpi-tile">
-        <div class="kpi-tile-icon">💰</div>
-        <div class="kpi-tile-value" style="color:var(--brand-primary);font-size:24px">₹${fmt(total)}</div>
-        <div class="kpi-tile-label">Total PR Value</div>
-        <div class="kpi-tile-sub">Across all PRs</div>
+  document.getElementById('mainContent').innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Overview</div>
+        <div class="page-title">Analytics Dashboard</div>
+        <div class="page-subtitle">Procurement intelligence for ${currentUser} · ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
       </div>
     </div>
 
-    <div class="card mb-4">
-      <div class="card-header"><span class="card-title">📊 PRs by Status</span></div>
-      <div class="card-body">
-        <div class="chart-bars">
-          ${byStatus.map(x => `
-            <div class="chart-row">
-              <div class="chart-row-label">${x.s}</div>
-              <div class="chart-bar-bg">
-                <div class="chart-bar-fill" style="width:${(x.count/maxCount*100)}%;background:${statusColors[x.s]||'#888'}">${x.count}</div>
-              </div>
-              <div class="chart-row-count">${x.count}</div>
-            </div>`).join('')}
+    <div class="kpi-grid">
+      <div class="kpi-tile">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-tile-value" style="color:#fbbf24">${pending}</div>
+        <div class="kpi-tile-label">Pending Approvals</div>
+        <div class="kpi-tile-sub">Awaiting action now</div>
+        ${pending > 0 ? '<span class="kpi-accent down">⚡ Needs attention</span>' : '<span class="kpi-accent up">✓ All clear</span>'}
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-tile-value" style="color:#34d399">${approved}</div>
+        <div class="kpi-tile-label">Approved PRs</div>
+        <div class="kpi-tile-sub">This period</div>
+        <span class="kpi-accent up">↑ ${approved} completed</span>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-tile-value">${all.length}</div>
+        <div class="kpi-tile-label">Total Requisitions</div>
+        <div class="kpi-tile-sub">All statuses combined</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon">💸</div>
+        <div class="kpi-tile-value" style="color:#818cf8;font-size:${total > 999999 ? '24' : '32'}px">₹${fmt(total)}</div>
+        <div class="kpi-tile-label">Total PR Value</div>
+        <div class="kpi-tile-sub">Across all requisitions</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon">❌</div>
+        <div class="kpi-tile-value" style="color:#f87171">${rejected}</div>
+        <div class="kpi-tile-label">Rejected PRs</div>
+        <div class="kpi-tile-sub">Budget or policy blocks</div>
+        ${rejected > 0 ? '<span class="kpi-accent down">Review reasons</span>' : '<span class="kpi-accent up">✓ Zero rejected</span>'}
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon">🏦</div>
+        <div class="kpi-tile-value" style="color:#60a5fa;font-size:24px">₹${fmt(DB.costCenters.reduce((s,c)=>s+c.remainingBudget,0))}</div>
+        <div class="kpi-tile-label">Total Remaining Budget</div>
+        <div class="kpi-tile-sub">Across all cost centers</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+      <div class="card">
+        <div class="card-header"><span class="card-title">PRs by Status</span></div>
+        <div class="card-body">
+          <div class="chart-bars">
+            ${byStatus.map(x => `
+              <div class="chart-row">
+                <div class="chart-row-label">${x.s}</div>
+                <div class="chart-bar-bg">
+                  <div class="chart-bar-fill" style="width:${(x.count/maxCount*100)}%;background:${statusColors[x.s]||'#888'};box-shadow:0 0 12px ${statusColors[x.s]||'#888'}66">${x.count}</div>
+                </div>
+                <div class="chart-row-count">${x.count}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Budget Utilisation</span></div>
+        <div class="card-body">
+          <div class="chart-bars">
+            ${DB.costCenters.map(cc => {
+              const pct = (cc.consumedBudget/cc.totalBudget*100).toFixed(1);
+              const col = pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#10b981';
+              return `
+                <div class="chart-row">
+                  <div class="chart-row-label">${cc.costCenter}<br><span style="font-size:10px;opacity:0.6">${cc.department}</span></div>
+                  <div class="chart-bar-bg">
+                    <div class="chart-bar-fill" style="width:${pct}%;background:${col};box-shadow:0 0 12px ${col}66">${pct}%</div>
+                  </div>
+                  <div class="chart-row-count" style="width:110px;font-size:11px;color:var(--text-2)">₹${fmt(cc.remainingBudget)} left</div>
+                </div>`;
+            }).join('')}
+          </div>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header"><span class="card-title">💰 Budget Utilisation</span></div>
+      <div class="card-header"><span class="card-title">Recent Activity</span><span class="text-sm text-muted">${DB.auditLog.length} events</span></div>
       <div class="card-body">
-        <div class="chart-bars">
-          ${DB.costCenters.map(cc => {
-            const pct = (cc.consumedBudget/cc.totalBudget*100).toFixed(1);
-            const cls = pct > 90 ? '#bb0000' : pct > 70 ? '#e67e00' : '#107e3e';
-            return `
-              <div class="chart-row">
-                <div class="chart-row-label">${cc.costCenter} (${cc.department})</div>
-                <div class="chart-bar-bg">
-                  <div class="chart-bar-fill" style="width:${pct}%;background:${cls}">${pct}%</div>
-                </div>
-                <div class="chart-row-count" style="width:100px;font-size:11px">₹${fmt(cc.remainingBudget)} left</div>
-              </div>`;
+        <div class="timeline">
+          ${[...DB.auditLog].sort((a,b)=>b.logTimestamp.localeCompare(a.logTimestamp)).slice(0,6).map((l,idx,arr) => {
+            const actionColors = {'Submit':'#6366f1','Approve':'#10b981','Reject':'#ef4444','Delegate':'#f59e0b','Withdraw':'#6b7280'};
+            const col = actionColors[l.actionTaken] || '#6366f1';
+            const pr = DB.prs.find(p=>p.prId===l.prId);
+            return `<div class="timeline-item">
+              <div class="tl-dot-wrap">
+                <div class="tl-dot" style="background:${col}"></div>
+                ${idx < arr.length-1 ? '<div class="tl-line"></div>' : ''}
+              </div>
+              <div class="tl-content">
+                <div class="tl-action" style="color:${col}">${l.actionTaken} · <span style="color:var(--text-1);font-size:13px">${pr ? pr.prExt : l.prId}</span></div>
+                <div class="tl-meta">${l.changedBy} · ${fmtDate(l.logTimestamp)}</div>
+                ${l.comments ? `<div class="tl-comment">${l.comments}</div>` : ''}
+              </div>
+            </div>`;
           }).join('')}
         </div>
       </div>
@@ -908,10 +987,15 @@ function getCostCenter(id) { const p=currentPeriod(); return DB.costCenters.find
 function statusBadge(s) {
   const map = {
     [STATUS.DRAFT]:    'draft',    [STATUS.SUBMITTED]: 'submitted',
-    [STATUS.PENDING]:  'pending',  [STATUS.APPROVED]:  'approved',
+    [STATUS.PENDING]:  'pendingapproval',  [STATUS.APPROVED]:  'approved',
     [STATUS.REJECTED]: 'rejected', [STATUS.CLOSED]:    'closed'
   };
-  return `<span class="badge badge-${map[s]||'draft'}">${s}</span>`;
+  const labels = {
+    [STATUS.DRAFT]:'Draft', [STATUS.SUBMITTED]:'Submitted',
+    [STATUS.PENDING]:'Pending', [STATUS.APPROVED]:'Approved',
+    [STATUS.REJECTED]:'Rejected', [STATUS.CLOSED]:'Closed'
+  };
+  return `<span class="badge badge-${map[s]||'draft'}">${labels[s]||s}</span>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

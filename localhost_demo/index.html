@@ -3,48 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ProcureFlow — Purchase Requisition System</title>
+  <title>ProcureFlow — Smart Procurement System</title>
+  <meta name="description" content="ProcureFlow: AI-powered SAP RAP purchase requisition management system with real-time approvals, budget tracking and audit trails." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+<div id="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
 
 <!-- ===================== SHELL / HEADER ===================== -->
 <div id="shell">
   <header class="shell-header">
     <div class="header-left">
       <div class="logo">
-        <div class="logo-icon">PF</div>
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="19" cy="6" r="3" fill="#6ee7b7"/>
+            <circle cx="5" cy="12" r="3" fill="#a78bfa"/>
+            <circle cx="19" cy="18" r="3" fill="#60a5fa"/>
+          </svg>
+        </div>
         <div class="logo-text">
           <span class="logo-title">ProcureFlow</span>
-          <span class="logo-sub">Purchase Requisition System</span>
+          <span class="logo-sub">Smart Procurement</span>
         </div>
       </div>
     </div>
     <nav class="header-nav" id="headerNav"></nav>
     <div class="header-right">
-      <div class="user-pill" id="userPill">
+      <div class="notif-btn" title="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </div>
+      <div class="user-pill" id="userPill" onclick="this.classList.toggle('open')">
         <div class="user-avatar" id="userAvatar">R1</div>
         <div class="user-info">
           <span class="user-name" id="userName">REQUESTER1</span>
           <span class="user-role" id="userRole">Requester</span>
         </div>
+        <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         <div class="user-dropdown" id="userDropdown">
-          <div class="dropdown-item" onclick="switchUser('REQUESTER1','Requester')">👤 REQUESTER1 (Requester)</div>
-          <div class="dropdown-item" onclick="switchUser('REQUESTER2','Requester')">👤 REQUESTER2 (Requester)</div>
-          <div class="dropdown-item" onclick="switchUser('MANAGER1','Approver')">✅ MANAGER1 (Approver)</div>
-          <div class="dropdown-item" onclick="switchUser('MANAGER2','Approver')">✅ MANAGER2 (Approver)</div>
-          <div class="dropdown-item" onclick="switchUser('FINANCE1','Finance Approver')">💰 FINANCE1 (Finance Approver)</div>
+          <div class="dropdown-header">Switch User</div>
+          <div class="dropdown-item" onclick="switchUser('REQUESTER1','Requester')"><div class="di-avatar r">R1</div><div><div class="di-name">REQUESTER1</div><div class="di-role">Requester</div></div></div>
+          <div class="dropdown-item" onclick="switchUser('REQUESTER2','Requester')"><div class="di-avatar r">R2</div><div><div class="di-name">REQUESTER2</div><div class="di-role">Requester</div></div></div>
+          <div class="dropdown-item" onclick="switchUser('MANAGER1','Approver')"><div class="di-avatar a">M1</div><div><div class="di-name">MANAGER1</div><div class="di-role">Approver</div></div></div>
+          <div class="dropdown-item" onclick="switchUser('MANAGER2','Approver')"><div class="di-avatar a">M2</div><div><div class="di-name">MANAGER2</div><div class="di-role">Approver</div></div></div>
+          <div class="dropdown-item" onclick="switchUser('FINANCE1','Finance Approver')"><div class="di-avatar f">F1</div><div><div class="di-name">FINANCE1</div><div class="di-role">Finance Approver</div></div></div>
         </div>
       </div>
     </div>
   </header>
 
   <!-- ===================== MAIN CONTENT ===================== -->
-  <main id="mainContent">
-    <!-- Views injected here by router -->
-  </main>
+  <main id="mainContent"></main>
 </div>
 
 <!-- ===================== MODAL ===================== -->
@@ -52,7 +70,9 @@
   <div class="modal" id="modal">
     <div class="modal-header">
       <h3 id="modalTitle">Action</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-footer" id="modalFooter"></div>
