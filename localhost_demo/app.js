@@ -1021,3 +1021,5 @@ router();
 // Enhancement: sort PR list by created date descending by default
 
 // [5/12] keyboard shortcut: ESC key closes modal
+
+// [6/12] pending count badge on nav button
