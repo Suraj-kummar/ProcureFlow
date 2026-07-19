@@ -618,3 +618,5 @@ The `Approve` action uses `SELECT ... FOR UPDATE` to lock the cost center budget
 </div>
 
 <!-- [9/12] screenshots section placeholder -->
+
+<!-- [10/12] contributing guidelines added -->
