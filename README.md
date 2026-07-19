@@ -616,3 +616,5 @@ The `Approve` action uses `SELECT ... FOR UPDATE` to lock the cost center budget
 *ProcureFlow — Because procurement should be smart, fast, and beautiful.*
 
 </div>
+
+<!-- [9/12] screenshots section placeholder -->
