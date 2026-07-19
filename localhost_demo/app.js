@@ -1025,3 +1025,5 @@ router();
 // [6/12] pending count badge on nav button
 
 // [7/12] skeleton loader for async data simulation
+
+// [8/12] sort status chart bars by count descending
